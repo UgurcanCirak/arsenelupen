@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:flutterproject/color_palette.dart';
 
 class StoryAudioPage extends StatefulWidget {
@@ -8,44 +8,25 @@ class StoryAudioPage extends StatefulWidget {
 }
 
 class _StoryAudioPageState extends State<StoryAudioPage> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool isPlaying = false;
-  String? currentPlayingStory;
-
-  // Hikaye bilgileri
+  // Hikaye bilgileri (YouTube linkleri)
   final List<Map<String, String>> stories = [
-    {'title': 'Arsèn Lupen: Kibar Hırsız', 'file': '/Users/ugurcancirak/Desktop/story.mp3', 'image': 'images/book.jpeg'},
-    {'title': 'Arsen Lupen: Herlock Sholmes\'e Karşı', 'file': 'voices/story1.mp3', 'image': 'images/book4.jpeg'},
-    {'title': 'Arsèn Lupen: Oyuk İğne', 'file': 'voices/story2.mp3', 'image': 'images/book2.jpeg'},
-    {'title': 'Arsèn Lupen: 813', 'file': 'voices/story3.mp3', 'image': 'images/book5.jpeg'},
-    {'title': 'Arsèn Lupen: Kristal Tıpa', 'file': 'voices/story5.mp3', 'image': 'images/book10.jpeg'},
-    {'title': 'Arsèn Lupen: Arsen Lupen\'in İtirafları', 'file': 'voices/story6.mp3', 'image': 'images/book6.jpeg'},
-    {'title': 'Arsèn Lupen: Saat Sekizi Çalarken', 'file': 'voices/story7.mp3', 'image': 'images/book7.jpeg'},
-    {'title': 'Arsèn Lupen: Esrarengiz Ev', 'file': 'voices/story8.mp3', 'image': 'images/book8.jpeg'},
-    // {'title': 'Arsèn Lupen: Üç Söğüt', 'file': 'voices/story9.mp3', 'image': 'images/book9.jpeg'},
+    {'title': 'Arsèn Lupen: Kibar Hırsız', 'url': 'https://www.youtube.com/watch?v=MQO9QaRvZ5w&list=PL1EUwUJUgyVGxRk2JD0OZxt6tdZUSxuNs', 'image': 'images/book.jpeg'},
+    {'title': 'Arsen Lupen: Herlock Sholmes\'e Karşı', 'url': 'https://www.youtube.com/watch?v=XXXXXXXXXXX', 'image': 'images/book4.jpeg'},
+    {'title': 'Arsèn Lupen: Oyuk İğne', 'url': 'https://www.youtube.com/watch?v=XXXXXXXXXXX', 'image': 'images/book2.jpeg'},
+    {'title': 'Arsèn Lupen: 813', 'url': 'https://www.youtube.com/watch?v=XXXXXXXXXXX', 'image': 'images/book5.jpeg'},
+    {'title': 'Arsèn Lupen: Kristal Tıpa', 'url': 'https://www.youtube.com/watch?v=XXXXXXXXXXX', 'image': 'images/book10.jpeg'},
+    {'title': 'Arsèn Lupen: Arsen Lupen\'in İtirafları', 'url': 'https://www.youtube.com/watch?v=XXXXXXXXXXX', 'image': 'images/book6.jpeg'},
+    {'title': 'Arsèn Lupen: Saat Sekizi Çalarken', 'url': 'https://www.youtube.com/watch?v=XXXXXXXXXXX', 'image': 'images/book7.jpeg'},
+    {'title': 'Arsèn Lupen: Esrarengiz Ev', 'url': 'https://www.youtube.com/watch?v=XXXXXXXXXXX', 'image': 'images/book8.jpeg'},
   ];
 
-  void playPauseAudio(String storyFile) async {
-    if (isPlaying && currentPlayingStory == storyFile) {
-      await _audioPlayer.pause();
-      setState(() {
-        isPlaying = false;
-        currentPlayingStory = null;
-      });
-    } else {
-      await _audioPlayer.stop();
-      await _audioPlayer.play(AssetSource(storyFile));
-      setState(() {
-        isPlaying = true;
-        currentPlayingStory = storyFile;
-      });
-    }
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
+  void openStoryPage(String title, String url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => StoryPlayerPage(title: title, url: url),
+      ),
+    );
   }
 
   @override
@@ -57,17 +38,15 @@ class _StoryAudioPageState extends State<StoryAudioPage> {
       ),
       body: Stack(
         children: [
-          // Arka plan resmi
           Positioned.fill(
             child: Opacity(
-              opacity: 0.2, // Opaklık seviyesi
+              opacity: 0.2,
               child: Image.asset(
-                'images/1.jpeg', // Arka plan resmi
-                fit: BoxFit.cover, // Resmi tam ekran yap
+                'images/1.jpeg',
+                fit: BoxFit.cover,
               ),
             ),
           ),
-          // İçerik
           Padding(
             padding: EdgeInsets.all(16.0),
             child: ListView.builder(
@@ -78,41 +57,28 @@ class _StoryAudioPageState extends State<StoryAudioPage> {
                   padding: EdgeInsets.symmetric(vertical: 8.0),
                   child: Row(
                     children: [
-                      // Küçük resim
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(8.0), // Köşeleri yuvarla
+                        borderRadius: BorderRadius.circular(8.0),
                         child: Image.asset(
                           story['image']!,
-                          width: 50, // Daha küçük bir boyut
+                          width: 50,
                           height: 70,
                           fit: BoxFit.cover,
                         ),
                       ),
-                      SizedBox(width: 12), // Resim ile metin arası boşluk
-                      // Hikaye ismi
+                      SizedBox(width: 12),
                       Expanded(
                         child: Text(
                           story['title']!,
                           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                          overflow: TextOverflow.ellipsis, // Uzun metinler taşmasın
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      SizedBox(width: 8), // Butonla isim arası boşluk
-                      // Oynat/Duraklat butonu
+                      SizedBox(width: 8),
                       ElevatedButton.icon(
-                        onPressed: () => playPauseAudio(story['file']!),
-                        icon: Icon(
-                          currentPlayingStory == story['file'] && isPlaying
-                              ? Icons.pause
-                              : Icons.play_arrow,
-                          size: 20,
-                        ),
-                        label: Text(
-                          currentPlayingStory == story['file'] && isPlaying
-                              ? 'Duraklat'
-                              : 'Oynat',
-                          style: TextStyle(fontSize: 14),
-                        ),
+                        onPressed: () => openStoryPage(story['title']!, story['url']!),
+                        icon: Icon(Icons.play_arrow, size: 20),
+                        label: Text('Oynat', style: TextStyle(fontSize: 14)),
                         style: ElevatedButton.styleFrom(
                           padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         ),
@@ -124,6 +90,55 @@ class _StoryAudioPageState extends State<StoryAudioPage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// 🔹 Yeni Sayfa: YouTube Hikaye Oynatma Sayfası
+class StoryPlayerPage extends StatefulWidget {
+  final String title;
+  final String url;
+
+  StoryPlayerPage({required this.title, required this.url});
+
+  @override
+  _StoryPlayerPageState createState() => _StoryPlayerPageState();
+}
+
+class _StoryPlayerPageState extends State<StoryPlayerPage> {
+  late YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    String? videoId = YoutubePlayer.convertUrlToId(widget.url);
+    if (videoId != null) {
+      _controller = YoutubePlayerController(
+        initialVideoId: videoId,
+        flags: YoutubePlayerFlags(autoPlay: true, mute: false),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+        backgroundColor: color3,
+      ),
+      body: Center(
+        child: YoutubePlayer(
+          controller: _controller,
+          showVideoProgressIndicator: true,
+        ),
       ),
     );
   }
